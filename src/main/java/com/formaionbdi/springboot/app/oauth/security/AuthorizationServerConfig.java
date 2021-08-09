@@ -29,12 +29,19 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-        super.configure(security);
+        security.tokenKeyAccess(("permitAll()")) //autentica
+        .checkTokenAccess("isAuthenticated()") ; // Header Authorization BAsic: client id : client secret
     }
 
+    //clients serian los clientes a registrar
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        super.configure(clients);
+        clients.inMemory().withClient("frontendapp").secret(passwordEncoder.encode("12345"))
+                .scopes("read","write").
+                authorizedGrantTypes("password","refresh_token") //tipo autenticacion , puede ser mas de 1
+                .accessTokenValiditySeconds(3600)
+                .refreshTokenValiditySeconds(3600);//3600segundos
+                //.and();
     }
 
     //relacionado a endpoint de oauth2
